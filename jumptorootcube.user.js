@@ -40,17 +40,46 @@
     function findAndJump() {
         $.getJSON(`/1.0/cell/${tomni.cell}/tasks`, function(data) {
             let root = data.root;
+            let found = new Array();
 
             for(let i in data.tasks) {
                 let task = data.tasks[i];
                 let bounds = task.bounds;
 
                 if(bounds.min.x === root.min.x && bounds.min.y === root.min.y && bounds.min.z === root.min.z && bounds.max.x === root.max.x && bounds.max.y === root.max.y && bounds.max.z === root.max.z) {
-                    tomni.jumpToTaskID(task.id);
-                    return;
+                    found.push(task.id);
                 }
             }
+
+            if(found.length == 1) {
+                jump(found[0]);
+            }
+            else if(found.length > 1) {
+                checkIfRoot(found);
+            }
         });
+    }
+
+    function checkIfRoot(found) {
+        if(found.length <= 0) {
+            return;
+        }
+
+        let id = found.pop();
+
+        //check if this cube has a parent. if not, it's the root. otherwise, check the next cube in the "found" array
+        $.getJSON(`/1.0/task/${id}`, function(data) {
+            if(data.parent === null) {
+                jump(id);
+            }
+            else {
+                checkIfRoot(found);
+            }
+        });
+    }
+
+    function jump(id) {
+        tomni.jumpToTaskID(id);
     }
 
     function copyCSS(from, to, additionalCSS) {
