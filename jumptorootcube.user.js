@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Jump to Root Cube
 // @namespace    bl4ckscor3
-// @version      1.0
+// @version      1.0.1
 // @description  EyeWire script to add a button that lets scouts and higher jump to the root cube of the cell they're currently viewing
 // @author       bl4ckscor3
 // @match        https://eyewire.org/
@@ -32,7 +32,7 @@
             rootButton.id = "rootJumpButton";
             rootButton.title = "Jump to this cell's root cube";
             rootButton.onclick = findAndJump;
-            copyCSS(document.getElementById("jumpButton"), rootButton, "; background-color: #6F57D2; cursor: pointer");
+            addButtonCSS();
             $("#cubeFinder").prepend(rootButton);
         }
     }
@@ -82,14 +82,20 @@
         tomni.jumpToTaskID(id);
     }
 
-    function copyCSS(from, to, additionalCSS) {
-        let styles = getComputedStyle(from);
-        let cssText = '';
-
-        for(let style in styles) {
-            cssText += `${style}:${styles[style]}`;
-        }
-
-        to.style.cssText = cssText + additionalCSS;
+    function addButtonCSS() {
+        $("head").append(`<style id="rootCubeButtonStyle">
+            #rootJumpButton {
+                background: url(/static/images/ui/Jump.svg) no-repeat 50%;
+                background-size: 65%;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                margin: 8px;
+                background-color: #6F57D2;
+                border: none;
+                outline: none;
+                cursor: pointer;
+            }
+        </style>`);
     }
 })();
